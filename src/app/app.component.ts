@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -6,27 +6,33 @@ import {Observable} from 'rxjs';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
 
+  observable: Observable<string>;
+  nomes: Array<string> = [];
 
 
   ngOnInit(){
-    const observable = new Observable(subscriber => {
-      subscriber.next(100);
-      subscriber.next(2);
-      subscriber.next(3000);
-      setTimeout(() => {
-        subscriber.next(4);
-        subscriber.complete();
-      }, 1000);
+    this.observable = new Observable(subscriber => {
+     setInterval(() => {
+       subscriber.next(this.makeid(5));
+     }, 1000)
     });
-
-    console.log('Antes de executar subscribe');
-    observable.subscribe({
-      next(x) {console.log("recebeu o valor" + x);},
-      error(err) {console.log("erro: " + err);},
-      complete(){console.log("terminou o subscribe");}
+    let lista: Array<string> = [];
+    this.observable.subscribe({
+      next(x) {lista.push(x);},
+      error(err) {alert("ocorreu um erro: " + err);}
     });
-    console.log("ultima linha");
+    this.nomes = lista;
+  }
+  enviar(valor :string){
+    this.nomes.push(valor);
+  }
+  makeid(length){
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for(var i = 0; i<length; i++)
+      text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
   }
 }
